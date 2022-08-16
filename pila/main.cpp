@@ -18,6 +18,7 @@ class Pila {
     T get(uint8_t indice);
     void repr(void);
     uint8_t error(void);
+    T operator[](uint8_t);
 
   protected: // No usamos el private para permitir a herederos acceder
     uint8_t aMax;
@@ -25,6 +26,21 @@ class Pila {
     uint8_t aErr;
     T * aData;
 };
+
+template<typename T>
+T Pila<T>::get(uint8_t i) {
+  if (aCur < i) {
+    aErr = 5;
+    return (T)NULL;
+  } else {
+    return aData[i];
+  }
+}
+
+template<typename T>
+T Pila<T>::operator[](uint8_t i) {
+  return get(i);
+}
 
 template<typename T>
 void Pila<T>::repr() {
@@ -79,13 +95,22 @@ void Pila<T>::push(T element) {
 
 template<typename T>
 T Pila<T>::top() {
-  return aData[aCur-1];
+  if (!is_empty()) { // Solo podemos sacar si hay algo
+    return aData[aCur-1];
+  } else {
+    aErr = 4;
+    return (T)NULL;
+  }
 }
 
 template<typename T>
 void Pila<T>::pop() {
-  aData[aCur-1] = 0;
-  aCur--;
+  if (!is_empty()) {
+    aData[aCur-1] = 0;
+    aCur--;
+  } else {
+    aErr = 5;
+  } 
 }
 
 int main() {
@@ -99,6 +124,10 @@ int main() {
 
     pila.repr();
     std::cout << "Last top: " << last << std::endl;
+
+    std::cout << pila[0] << std::endl;
+
+    pila.repr();
 
     /*
     Pila<float> pilaf = Pila<float>(10);
