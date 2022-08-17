@@ -119,10 +119,10 @@ impl<T: Debug> Debug for Pila<T> {
 }
 
 fn main() {
-    let mut pila: Pila<&str> = Pila::new(0);
+    let mut pila: Pila<String> = Pila::new(0);
     let mut i = 1;
-    while let Ok(_) = pila.push("Hola") {
-        println!("{pila:?}");
+    while let Ok(_) = pila.push("Hola".to_owned()) {
+        println!("{pila}");
         i += 1;
         if i == 10 {
             break;
@@ -131,6 +131,6 @@ fn main() {
 
     while let Some(_) = pila.pop() {
         pila.fix();
-        println!("{pila:?}");
+        println!("{pila}");
     }
 }

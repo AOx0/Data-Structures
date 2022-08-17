@@ -6,82 +6,50 @@ use std::{
     marker::PhantomData,
 };
 
-struct Pila<T: Sized> {
-    memoria: *mut u8,
+struct Pila<T> {
+    memoria: Vec<T>,
     current: usize,
-    maximum: usize,
-    layout: Layout,
-    ty: PhantomData<T>,
 }
 
-impl<T: Sized + Copy> Pila<T> {
-    unsafe fn get_slice(&self) -> &mut [T] {
-        core::slice::from_raw_parts_mut(self.memoria as *mut T, self.maximum as usize)
-    }
 
+impl<T: Sized + Clone> Pila<T> {
     pub fn new(size: usize) -> Self {
-        unsafe {
-            Pila {
-                layout: Layout::array::<T>(size).unwrap(),
-                memoria: alloc(Layout::array::<T>(size).unwrap()),
-                maximum: size,
-                current: 0,
-                ty: PhantomData,
-            }
+        Pila {
+            memoria: Vec::with_capacity(size),
+            current: 0,
         }
     }
 
     pub fn top(&self) -> Option<T> {
-        unsafe {
-            if self.current == 0 {
-                None
-            } else {
-                Some(self.get_slice()[self.current - 1])
-            }
+        if self.current == 0 {
+            None
+        } else {
+            Some(self.memoria[self.current - 1].clone())
         }
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        unsafe {
-            if self.current == 0 {
-                None
-            } else {
-                let value = self.get_slice()[self.current - 1];
-                self.current -= 1;
-                Some(value)
-            }
+        if self.current == 0 {
+            None
+        } else {
+            let value = self.memoria[self.current - 1].clone();
+            self.current -= 1;
+            Some(value)
         }
     }
 
-    pub fn push(&mut self, value: T) -> Result<(), ()> {
-        unsafe {
-            if self.current == self.maximum {
-                Err(())
-            } else {
-                self.get_slice()[self.current] = value;
-                self.current += 1;
-                Ok(())
-            }
-        }
-    }
-}
-
-impl<T> Drop for Pila<T> {
-    fn drop(&mut self) {
-        unsafe { dealloc(self.memoria, self.layout) }
+    pub fn push(&mut self, value: T) {
+        self.memoria.push(value);
+        self.current += 1;
     }
 }
 
 impl<T: Display> Display for Pila<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        unsafe {
-            let slice: &mut [T] =
-                core::slice::from_raw_parts_mut(self.memoria as *mut T, self.maximum as usize);
-            for i in 0..self.maximum {
-                match i {
-                    x if x < self.current => write!(f, " {:4} |", slice[x])?,
-                    _ => write!(f, " {:4} |", "null")?,
-                }
+        for i in 0..self.current {
+            match i {
+                x if x < self.current => write!(f, " {:4} |", self.memoria[x])?,
+                _ => write!(f, " {:4} |", "null")?,
             }
         }
 
@@ -90,16 +58,15 @@ impl<T: Display> Display for Pila<T> {
 }
 
 fn main() {
-    let mut pila: Pila<usize> = Pila::new(10);
+    let mut pila: Pila<String> = Pila::new(0);
     let mut i = 1;
-    while let Ok(_) = pila.push(i * 10) {
-        print!("Agregado : {:4} -- ", i * 10);
+    while i < 10 {
+        pila.push("Hola".to_owned()); 
         println!("{pila}");
         i += 1;
     }
 
-    while let Some(value) = pila.pop() {
-        print!("Eliminado: {value:4} -- ");
+    while let Some(_) = pila.pop() {
         println!("{pila}");
     }
 }
