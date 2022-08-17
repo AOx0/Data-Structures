@@ -3,7 +3,7 @@
 use std::{
     alloc::{alloc, dealloc, Layout},
     fmt::Display,
-    marker::PhantomData, cell::RefCell, mem::MaybeUninit,
+    marker::PhantomData, mem::MaybeUninit,
 };
 
 pub struct Pila<T: Sized> {
@@ -14,16 +14,16 @@ pub struct Pila<T: Sized> {
     ty: PhantomData<T>,
 }
 
-impl<T: Sized + Clone + Default> Pila<T> {
-    unsafe fn get_slice(&self) -> &mut [MaybeUninit<RefCell<T>>] {
-        core::slice::from_raw_parts_mut(self.memoria as *mut MaybeUninit<RefCell<T>>, self.maximum as usize)
+impl<T: Sized> Pila<T> {
+    unsafe fn get_slice(&self) -> &mut [MaybeUninit<T>] {
+        core::slice::from_raw_parts_mut(self.memoria as *mut MaybeUninit<T>, self.maximum as usize)
     }
 
     pub fn new(size: usize) -> Self {
         unsafe {
             let pila = Pila {
-                layout: Layout::array::<MaybeUninit<RefCell<T>>>(size).unwrap(),
-                memoria: alloc(Layout::array::<MaybeUninit<RefCell<T>>>(size).unwrap()),
+                layout: Layout::array::<MaybeUninit<T>>(size).unwrap(),
+                memoria: alloc(Layout::array::<MaybeUninit<T>>(size).unwrap()),
                 maximum: size,
                 current: 0,
                 ty: PhantomData,
@@ -33,7 +33,6 @@ impl<T: Sized + Clone + Default> Pila<T> {
 
             for i in 0..size {
                 iter[i] = std::mem::MaybeUninit::uninit();
-                iter[i].write(RefCell::new(T::default()));
             };
 
             pila
@@ -46,7 +45,7 @@ impl<T: Sized + Clone + Default> Pila<T> {
             if self.current == 0 {
                 None
             } else {
-                Some(self.get_slice()[self.current - 1].assume_init_mut().get_mut())
+                Some(self.get_slice()[self.current - 1].assume_init_mut())
             }
         }
     }
@@ -56,7 +55,8 @@ impl<T: Sized + Clone + Default> Pila<T> {
             if self.current == 0 {
                 None
             } else {
-                let value = self.get_slice()[self.current - 1].assume_init_mut().take();
+                let value = self.get_slice()[self.current - 1].assume_init_read();
+                self.get_slice()[self.current - 1] = std::mem::MaybeUninit::uninit();
                 self.current -= 1;
                 Some(value)
             }
@@ -68,7 +68,7 @@ impl<T: Sized + Clone + Default> Pila<T> {
             if self.current == self.maximum {
                 Err(())
             } else {
-                self.get_slice()[self.current].assume_init_mut().replace(value);
+                self.get_slice()[self.current].write(value);
                 self.current += 1;
                 Ok(())
             }
@@ -88,7 +88,7 @@ impl<T: Display + Clone + Default> Display for Pila<T> {
             let slice = self.get_slice(); 
             for i in 0..self.maximum {
                 match i {
-                    x if x < self.current => write!(f, " {:4} |", slice[x].assume_init_ref().borrow())?,
+                    x if x < self.current => write!(f, " {:4} |", slice[x].assume_init_ref())?,
                     _ => write!(f, " {:4} |", "null")?,
                 }
             }
