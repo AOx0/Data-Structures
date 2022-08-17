@@ -1,11 +1,5 @@
 #![allow(dead_code)]
 
-use std::{
-    alloc::{alloc, dealloc, Layout},
-    fmt::Display,
-    marker::PhantomData,
-};
-
 struct Pila<T> {
     memoria: Vec<T>,
     current: usize,
@@ -20,11 +14,11 @@ impl<T: Sized + Clone> Pila<T> {
         }
     }
 
-    pub fn top(&self) -> Option<T> {
+    pub fn top(&mut self) -> Option<&mut T> {
         if self.current == 0 {
             None
         } else {
-            Some(self.memoria[self.current - 1].clone())
+            Some(self.memoria.get_mut(self.current - 1).unwrap())
         }
     }
 
@@ -32,7 +26,7 @@ impl<T: Sized + Clone> Pila<T> {
         if self.current == 0 {
             None
         } else {
-            let value = self.memoria[self.current - 1].clone();
+            let value = self.memoria.remove(self.current - 1);
             self.current -= 1;
             Some(value)
         }
@@ -44,7 +38,7 @@ impl<T: Sized + Clone> Pila<T> {
     }
 }
 
-impl<T: Display> Display for Pila<T> {
+impl<T: std::fmt::Display> std::fmt::Display for Pila<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for i in 0..self.current {
             match i {
