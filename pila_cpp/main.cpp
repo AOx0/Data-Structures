@@ -13,7 +13,7 @@ class Pila {
     T top(void);
     bool is_empty(void);
     bool is_full(void);
-    Pila(uint8_t size); // Constructor
+    Pila(); // Constructor
     ~Pila(void); // Destructor, se llama al salir del scope o manual
     T get(uint8_t indice);
     void repr(void);
@@ -51,14 +51,11 @@ void Pila<T>::repr() {
 }
 
 template<typename T>
-Pila<T>::Pila(uint8_t size): aMax(size), aCur(0), aData(NULL), aErr(0) {
-  if (size > 0) {
-    aData = new T[size];
-    if (aData == NULL) /* Si no tiene memoria  */ {
-      aErr = 2;
-    }
-  } else 
-      aErr = 1;
+Pila<T>::Pila(): aMax(1), aCur(0), aData(NULL), aErr(0) {
+  aData = new T[1];
+  if (aData == NULL) /* Si no tiene memoria  */ {
+    aErr = 2;
+  }
 };
 
 template<typename T>
@@ -84,12 +81,16 @@ template<typename T>
 void Pila<T>::push(T element) {
   aErr = 0; // Reiniciamos el estatus de error
   if (aData) {
-    if (!is_full()) { // Si no está lleno
-      aData[aCur] = element;
-      aCur++;
-    } else {
-      aErr = 3;
+    if (is_full()) { // Si no está lleno
+      aMax++;
+      T * aNew = new T[aMax];
+      for (int i=0; i<aCur; i++) aNew[i] = aData[i];
+      delete [] aData;
+      aData = aNew;
     }
+
+    aData[aCur] = element;
+    aCur++;
   }
 }
 
@@ -115,7 +116,7 @@ void Pila<T>::pop() {
 
 int main() {
   {
-    Pila<int> pila = Pila<int>(10);
+    Pila<int> pila = Pila<int>();
     pila.push(1);
     pila.push(2);
 
@@ -129,18 +130,9 @@ int main() {
 
     pila.repr();
 
-    /*
-    Pila<float> pilaf = Pila<float>(10);
-    pilaf.push(1.0);
-    pilaf.push(2.0);
-
-    float lastf = pilaf.top();
-    pilaf.pop();
-    pilaf.push(100);
-
-    pilaf.repr();
-    std::cout << "Last top: " << lastf << std::endl;
-    */
+    pila.push(1);
+    pila.push(2);
+    pila.repr();
   }
   return 0;
 }
