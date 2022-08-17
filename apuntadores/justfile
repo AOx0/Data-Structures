@@ -1,9 +1,0 @@
-build: config
-  cmake --build .
-
-run: build
-  ./apuntadores
-
-config:
-  cmake .
-  
