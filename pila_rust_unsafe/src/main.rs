@@ -63,7 +63,7 @@ impl<T: Sized> Pila<T> {
         }
     }
 
-    pub fn push(&mut self, value: T) -> Result<(), ()> {
+    pub fn push(&mut self, value: T) {
         unsafe {
             if self.current == self.maximum {
                 self.maximum += 1;
@@ -73,8 +73,6 @@ impl<T: Sized> Pila<T> {
             } 
             self.get_slice()[self.current].write(value);
             self.current += 1;
-            Ok(())
-            
         }
     }
 }
