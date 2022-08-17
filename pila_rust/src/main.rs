@@ -5,7 +5,6 @@ struct Pila<T> {
     current: usize,
 }
 
-
 impl<T: Sized + Clone> Pila<T> {
     pub fn new(size: usize) -> Self {
         Pila {
@@ -26,9 +25,8 @@ impl<T: Sized + Clone> Pila<T> {
         if self.current == 0 {
             None
         } else {
-            let value = self.memoria.remove(self.current - 1);
             self.current -= 1;
-            Some(value)
+            Some(self.memoria.remove(self.current))
         }
     }
 
@@ -55,7 +53,7 @@ fn main() {
     let mut pila: Pila<String> = Pila::new(0);
     let mut i = 1;
     while i < 10 {
-        pila.push("Hola".to_owned()); 
+        pila.push("Hola".to_owned());
         println!("{pila}");
         i += 1;
     }
