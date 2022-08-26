@@ -1,0 +1,20 @@
+default:
+  just --list
+
+init:
+  cmake .
+
+build: init
+  cmake --build .
+
+build_release: init 
+  cmake --build . --config Release
+
+run: build
+  ./calc_cpp
+
+run_release: build_release
+  ./calc_cpp
+
+clean:
+  rm -rf cmake_install.cmake CMakeFiles CMakeCache.txt Makefile 
