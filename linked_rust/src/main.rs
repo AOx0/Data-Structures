@@ -112,7 +112,7 @@ impl<T: Debug> LinkedList<T> {
 impl<T: Debug> Drop for LinkedList<T> {
    fn drop(&mut self) {
        if self.fisrt_node.is_some() {
-            unsafe { (*(self.fisrt_node.unwrap() as *mut MaybeUninit<Node<T>>)).assume_init_drop() }
+            unsafe { (*(self.fisrt_node.unwrap() as *mut MaybeUninit<Node<T>>)).assume_init_read(); }
        }
    } 
 }
@@ -212,17 +212,17 @@ impl<'a, T: Debug> Iterator for LinkedListIterMut<'a, T> {
 }
 
 fn main() {
-    let mut n = LinkedList::from_iter([5, 4, 2]);
+    let mut n = LinkedList::from_iter(["Hola".to_owned(), "Adios".to_owned()]);
 
     for (i, element) in n.iter().enumerate() {
         println!("{i}: {}", element.value);
     } 
 
     for element in n.iter_mut() {
-        element.value = 5;
+        element.value = "Jaja".to_owned();
     }
 
    for (i, element) in n.iter().enumerate() {
         println!("{i}: {}", element.value);
-    } 
+    }
 }
