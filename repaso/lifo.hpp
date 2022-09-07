@@ -13,36 +13,36 @@
 using namespace std;
 
 struct Pila {
-  private:
-    int * primos;
-    int primo_max;
-    size_t num_primos;
-    size_t size_num_primos;
-    int primos_ingresados;
+private:
+  int * primos;
+  int primo_max;
+  size_t num_primos;
+  size_t size_num_primos;
+  int primos_ingresados;
 
-    static bool num_in(int * n, int size, int num);
-    void push_prime(int n);
-    void gen_primos(int hasta);
-    bool is_prime(int n);
+  static bool num_in(int * n, int size, int num);
+  void push_prime(int n);
+  void gen_primos(int hasta);
+  bool is_prime(int n);
 
-  protected:
-    int suma;
-    int * data;
-    int size;
-    int curr;
-    Result<uint8_t, uint8_t> resize(int new_size);
+protected:
+  int suma;
+  int * data;
+  int size;
+  int curr;
+  Result<uint8_t, uint8_t> resize(int new_size);
 
-    friend ostream& operator<< (ostream &os, const Pila &e);
+  friend ostream& operator<< (ostream &os, const Pila &e);
 
-  public:
-    Result<uint8_t, uint8_t> get(size_t idx);
-    int operator[](size_t idx);
-    Pila(int size);
-    ~Pila();
-    bool is_empty();
-    bool is_full();
-    Result<uint8_t, uint8_t> push(int valor);
-    Result<uint8_t, uint8_t> pop(int valor);
-    int numero_primos() const;
+public:
+  Result<uint8_t, uint8_t> get(size_t idx);
+  int operator[](size_t idx);
+  Pila(int size);
+  ~Pila();
+  bool is_empty();
+  bool is_full();
+  Result<uint8_t, uint8_t> push(int valor);
+  Result<uint8_t, uint8_t> pop(int valor);
+  int numero_primos() const;
 };
 

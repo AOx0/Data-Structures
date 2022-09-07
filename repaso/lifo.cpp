@@ -1,9 +1,9 @@
 #include "lifo.hpp"
 #include <utility>
 
-#define Res Result<uint8_t, uint8_t> 
+#define Res Result<uint8_t, uint8_t>
 
-Pila::Pila(int size) 
+Pila::Pila(int size)
   : data((int *)NULL)
   , primos((int *)NULL)
   , num_primos(0)
@@ -34,12 +34,12 @@ int Pila::operator[](size_t idx) {
 }
 
 Res Pila::pop(int valor) {
-    if (curr == 0) {
-      return Res::Err(1);
-    } else {
-      curr--;
-      return Res::Ok(data[curr]);
-    }
+  if (curr == 0) {
+    return Res::Err(1);
+  } else {
+    curr--;
+    return Res::Ok(data[curr]);
+  }
 }
 
 Res Pila::push(int valor) {
@@ -56,7 +56,7 @@ Res Pila::push(int valor) {
   }
 
   data[curr++] = valor;
-  return Res::Ok(0); 
+  return Res::Ok(0);
 }
 
 Pila::~Pila() {
